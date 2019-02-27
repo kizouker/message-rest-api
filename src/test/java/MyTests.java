@@ -12,7 +12,6 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 
-import static org.junit.Assert.assertEquals;
 import static org.hamcrest.CoreMatchers.*;
 import static org.hamcrest.MatcherAssert.*;
 
@@ -119,7 +118,10 @@ public class MyTests {
     }
 
 
-
+//TODO: put, list tests, break out code that is redudant, more asserts?
+    //TODO: negative flows
+    //TODO: Readme + assumptions + requriements
+    //TODO: github
 
     // String[] args = {"2", "5", "5", "2,1", "1,2", "2,2", "3,2", "1,3", "3,3", "2,4"};
     // SpringApplication.run(App.class, args);
@@ -138,5 +140,5 @@ public class MyTests {
         params.add(new BasicNameValuePair("password", "pass"));
         httpPost.setEntity(new UrlEncodedFormEntity(params));
 **/
-       
+
 }
