@@ -1,84 +1,135 @@
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.storytel.App;
 
+import org.json.simple.parser.ParseException;
 import org.junit.Test;
-import org.springframework.boot.SpringApplication;
 
 import java.io.IOException;
+import java.io.StringWriter;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.net.http.HttpResponse.BodyHandlers;
 
 import static org.hamcrest.CoreMatchers.*;
 import static org.hamcrest.MatcherAssert.*;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
 
+
+import org.springframework.http.HttpStatus;
 
 
 public class MyTests {
 
-    private final String url_ = "http://localhost:8080/restapi/";
+    private final String url_ = "http://localhost:8080/rest/messageservice/1.0/";
 
-    @Test
-    public void testPositiveFlowPost() throws URISyntaxException, IOException, InterruptedException {
-       HttpRequest request = HttpRequest.newBuilder()
-                .uri(new URI(url_+"post?message=test"))
-                //.headers("message", "test")
-                .POST(HttpRequest.BodyPublishers.noBody())
-                .build();
+    private HttpClient httpclient = HttpClient.newBuilder().build();
 
-        HttpResponse<String> response = HttpClient.newBuilder()
-                .build()
-                .send(request, HttpResponse.BodyHandlers.ofString());
+    private String buildJsonRequestBody(String msg) throws IOException {
+        JSONObject obj = new JSONObject();
+        obj.put("message", msg);
 
-        System.out.println("StatusCode (POST): " + response.statusCode());
-        System.out.println("Response Body (POST): " + response.body());
+        StringWriter out = new StringWriter();
+        obj.writeJSONString(out);
+        String jsonRequestBody = out.toString();
 
-        assertThat(response.statusCode(), equalTo(200));
+        System.out.println("----- JSON Request Body ----");
+        System.out.println(jsonRequestBody);
+        System.out.println("---- ---- ---- ---- --- ----");
+        return jsonRequestBody;
     }
 
 
-    @Test
-    public void testPositiveFlowPostGet() throws URISyntaxException, IOException, InterruptedException {
+    //TODO: there is no validation in json raw format sent in body messag or message is the ok
+    private HttpResponse doPostWithJson(String json, String url, String http_verb) throws URISyntaxException, IOException, InterruptedException{
+
+        System.out.println("-----  " + "HTTP VERB :" + http_verb + " -----");
+        System.out.println("-----  "+ url + " -----");
+
         HttpRequest request = HttpRequest.newBuilder()
-                .uri(new URI(url_+"post?message=test"))
-                //.headers("message", "test")
-                .POST(HttpRequest.BodyPublishers.noBody())
+                .uri(new URI(url+http_verb))
+                .header("content-type", "application/json")
+                .POST(HttpRequest.BodyPublishers.ofString(json))
                 .build();
 
         HttpResponse<String> response = HttpClient.newBuilder()
                 .build()
                 .send(request, HttpResponse.BodyHandlers.ofString());
 
+        System.out.println("HTTP StatusCode: " + response.statusCode());
+        System.out.println("HTTP Response Body: " + response.body());
+        System.out.println("----- "+ " ------"  + " -----");
 
-        String json = response.body();
-        ObjectMapper objectMapper = new ObjectMapper();
+        return response;
+    }
 
-        JsonNode jsonNode = objectMapper.readTree(json);
-        long id = jsonNode.get("id").asLong();
+    @Test
+    public void testPosFlowFlowPost()  throws URISyntaxException, IOException, InterruptedException{
+        String http_verb ="post";
 
-        System.out.println("StatusCode (POST): " + response.statusCode());
-        System.out.println("Response Body (POST): " + json);
+        String jsonRequestBody = buildJsonRequestBody("David I cannot do that!");
+        HttpResponse response = doPostWithJson(jsonRequestBody, url_, http_verb);
+
+        assertThat(response.statusCode(), equalTo(HttpStatus.OK.value()));
+    }
+
+    @Test
+    public void testNotFoundPost()  throws URISyntaxException, IOException, InterruptedException{
+        String http_verb ="postt";
+
+        String jsonRequestBody = buildJsonRequestBody("David I cannot do that!");
+        HttpResponse response = doPostWithJson(jsonRequestBody, url_, http_verb);
+
+        assertThat(response.statusCode(), equalTo(HttpStatus.NOT_FOUND.value()));
+    }
+
+    @Test
+    public void testPositiveFlowPostGet() throws URISyntaxException, IOException, InterruptedException, ParseException {
+
+        //do a http post
+        String http_verb ="post";
+        String jsonRequestBody = buildJsonRequestBody("David I cannot do that!");
+        HttpResponse responsePost = doPostWithJson(jsonRequestBody, url_, http_verb);
+
+        //get the id from the post, to use for the get
+        long id = getId(responsePost);
+
+        // http get
+        http_verb ="get";
+        HttpResponse<String> responseGet = doHttpGet(responsePost, url_, http_verb, id);
+
+        assertThat(responseGet.statusCode(), equalTo(HttpStatus.OK.value())); // TODO:test 201 too
+    }
+
+    private HttpResponse<String> doHttpGet(HttpResponse response, String url, String http_verb, long id) throws URISyntaxException, IOException, InterruptedException {
+        System.out.println("-----  " + "HTTP VERB :" + http_verb + " -----");
+        System.out.println("-----  "+ url + " -----");
 
         HttpRequest requestGet = HttpRequest.newBuilder()
-                .uri(new URI(url_+"get?id="+id))
-                //.headers("message", "test")
+                .uri(new URI(url+http_verb + "?id="+id))
+                .headers("content-type", "x-www-form-urlencoded")
                 .GET()
                 .build();
 
-        HttpResponse<String> responseGet = HttpClient.newBuilder()
-                .build()
-                .send(requestGet, HttpResponse.BodyHandlers.ofString());
+        HttpResponse<String> responseGet = httpclient
+                .send(requestGet, BodyHandlers.ofString());
 
-        System.out.println("StatusCode (GET): " + response.statusCode());
-        System.out.println("Response Body (GET): " + response.body());
-
-        assertThat(responseGet.statusCode(), equalTo(200));
+        System.out.println("HTTP StatusCode: " + response.statusCode());
+        System.out.println("HTTP Response Body: " + response.body());
+        return responseGet;
     }
 
+    private long getId(HttpResponse response) throws ParseException {
+        JSONParser parser = new JSONParser();
+        Object jsonObj = parser.parse(response.body().toString());
+        JSONObject jsonObject = (JSONObject) jsonObj;
 
+        long id = (long) jsonObject.get("id");
+        return id;
+    }
 
     @Test
     public void testPositiveFlowPostDel() throws URISyntaxException, IOException, InterruptedException {
@@ -101,6 +152,8 @@ public class MyTests {
         System.out.println("StatusCode (POST): " + response.statusCode());
         System.out.println("Response Body (POST): " + response.body());
 
+
+
         HttpRequest requestDel = HttpRequest.newBuilder()
                 .uri(new URI(url_+"delete?id="+id))
                 //.headers("message", "test")
@@ -117,15 +170,11 @@ public class MyTests {
         assertThat(responseDel.statusCode(), equalTo(200));
     }
 
-
-//TODO: put, list tests, break out code that is redudant, more asserts?
+    //TODO: put, list tests, break out code that is redudant, more asserts?
     //TODO: negative flows
     //TODO: Readme + assumptions + requriements
     //TODO: github
 
-    // String[] args = {"2", "5", "5", "2,1", "1,2", "2,2", "3,2", "1,3", "3,3", "2,4"};
-    // SpringApplication.run(App.class, args);
-    // assertEquals();
 
         /**
          *

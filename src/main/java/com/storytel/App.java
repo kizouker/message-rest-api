@@ -7,24 +7,17 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.web.context.WebApplicationContext;
 
-import java.util.HashMap;
-
 @SpringBootApplication
 public class App {
 
-
     public static void main(String[] args) {
-
         SpringApplication.run(App.class, args);
     }
-
-
+    // The context is through the whole application
     @Bean (name = "applicationScopedBean")
     @Scope(value = WebApplicationContext.SCOPE_APPLICATION, proxyMode = ScopedProxyMode.TARGET_CLASS)
     public Messages getMessagesScopeApplication() {
 
         return new Messages();
     }
-
-
 }

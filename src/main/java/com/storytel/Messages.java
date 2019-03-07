@@ -5,7 +5,7 @@ import java.util.HashMap;
 
 public class Messages {
 
-    private HashMap messages = new HashMap();
+    private HashMap messages = new HashMap(); // Choosing hashmap - cheap and easy to find the messages
 
     public void setMessage(long id, Message msg) {
         this.messages.put(id, msg);

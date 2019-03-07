@@ -6,8 +6,6 @@ public class Message {
 
     private final long id;
     private final String msg;
-    private Date date;
-    private String Client;
 
     public Message(long id, String msg) {
 
