@@ -9,6 +9,7 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 **/
 
+import org.json.simple.parser.ParseException;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
@@ -23,11 +24,9 @@ public class MessageController {
     @Resource (name = "applicationScopedBean")
     Messages applicationScopedBean; // A shared resource, the scope is over the whole app
 
-
-// ACCEPTS PARAMS IN BODY
     @RequestMapping(value = "/messageservice/1.0/post",
             method = RequestMethod.POST,
-            consumes = {"application/json"},
+            consumes = {"text/plain"},
             produces = {"application/json"})
     public Message post(@RequestBody String message) {
         long id = counter.incrementAndGet();
@@ -36,28 +35,40 @@ public class MessageController {
         return msg;
     }
 
-    @RequestMapping("/messageservice/1.0/list")
-    public Collection<Message> list() {
-        return applicationScopedBean.listMessages();
+    @RequestMapping(value = "/messageservice/1.0/get",
+            method = RequestMethod.GET,
+            consumes = {"application/x-www-form-urlencoded"},
+            produces = {"application/json"})
+    public Message get(@RequestParam(value = "id") long id) {
+        return applicationScopedBean.getText(id); //todo: return a differnt json object
     }
 
-    @RequestMapping("/messageservice/1.0/delete")
-    public Collection<Message> delete(@RequestParam(value = "id") long id) {
+    @RequestMapping(value = "/messageservice/1.0/delete",
+                method = RequestMethod.DELETE,
+                consumes = {"application/x-www-form-urlencoded"},
+                produces = {"application/json"})
+    public String delete(@RequestParam(value = "id") long id) {
         return applicationScopedBean.removeMessage(id);
     }
 
-    @RequestMapping("/messageservice/1.0/get")
-    public Message get(@RequestParam(value = "id") long id) {
-       return applicationScopedBean.getMessage(id);
-    }
+    @RequestMapping(value = "/messageservice/1.0/put",
+            method = RequestMethod.PUT,
+            consumes = {"application/json"},
+            produces = {"application/json"})
 
-    @RequestMapping("/messageservice/1.0/put")
-    public Message put(@RequestParam(value = "id") long id, @RequestParam(value = "message") String message){
+    public Message put(@RequestBody long id, @RequestBody String message){
+        // public Message put(@RequestBody long id, @RequestBody String message){
+        // public Message put(@RequestParam(value = "id") long id, @RequestParam(value = "message") String message){
         Message msg = new Message(id, String.format(message));
         applicationScopedBean.setMessage(id, msg);
         return msg;
     }
 
+    @RequestMapping("/messageservice/1.0/list")
+    public String list(){ //todo: where should the exception be caught in app? or where?
+        return applicationScopedBean.listMessages();
+    }
+    /* TODO: add exception handling - what error msg does the client get? is it useful? */
 /**
     @ExceptionHandler({Exception.class})
     public  handleException(){

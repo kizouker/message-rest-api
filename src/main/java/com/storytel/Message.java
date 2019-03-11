@@ -1,7 +1,5 @@
 package com.storytel;
 
-import java.util.Date;
-
 public class Message {
 
     private final long id;

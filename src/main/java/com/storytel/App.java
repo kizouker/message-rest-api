@@ -12,12 +12,15 @@ public class App {
 
     public static void main(String[] args) {
         SpringApplication.run(App.class, args);
+
     }
     // The context is through the whole application
     @Bean (name = "applicationScopedBean")
     @Scope(value = WebApplicationContext.SCOPE_APPLICATION, proxyMode = ScopedProxyMode.TARGET_CLASS)
     public Messages getMessagesScopeApplication() {
 
-        return new Messages();
+
+
+     return new Messages();
     }
 }
