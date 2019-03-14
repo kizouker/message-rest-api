@@ -1,22 +1,17 @@
 package com.storytel;
 
-import java.util.Collection;
 import java.util.concurrent.atomic.AtomicLong;
 
-/**
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
-**/
-
-import org.json.simple.parser.ParseException;
 import org.springframework.web.bind.annotation.*;
-
 import javax.annotation.Resource;
 
 // The Rest API
 
 @RestController
+@Api(description = "Set of endpoints for creating, updating, deleting and listing messages.")
 public class MessageController {
 
     private final AtomicLong counter = new AtomicLong(); // Good for incremental updates
@@ -24,11 +19,13 @@ public class MessageController {
     @Resource (name = "applicationScopedBean")
     Messages applicationScopedBean; // A shared resource, the scope is over the whole app
 
+
     @RequestMapping(value = "/messageservice/1.0/post",
             method = RequestMethod.POST,
             consumes = {"text/plain"},
             produces = {"application/json"})
-    public Message post(@RequestBody String message) {
+    @ApiOperation(value = "Create a message resource.", notes = "Returns a Json with the message and a generated ID")
+    public Message post(@ApiParam(name = "The message provided in the payload/requestbody", required = true) @RequestBody String message) {
         long id = counter.incrementAndGet();
         Message msg = new Message(id, String.format(message));
         applicationScopedBean.setMessage(id, msg);
@@ -39,7 +36,9 @@ public class MessageController {
             method = RequestMethod.GET,
             consumes = {"application/x-www-form-urlencoded"},
             produces = {"application/json"})
-    public Message get(@RequestParam(value = "id") long id) {
+    @ApiOperation(value = "Get a single message. You have to provide a valid message ID")
+    public Message get(@ApiParam(name = "The ID of the Message.", required = true)
+                           @RequestParam(value = "id") long id) {
         return applicationScopedBean.getText(id); //todo: return a differnt json object
     }
 
@@ -47,7 +46,9 @@ public class MessageController {
                 method = RequestMethod.DELETE,
                 consumes = {"application/x-www-form-urlencoded"},
                 produces = {"application/json"})
-    public String delete(@RequestParam(value = "id") long id) {
+    @ApiOperation(value = "Delete a message.", notes = "You have to provide a valid message ID in the url (ex: ?id=\"1\"). " +
+            "Returned is a Json with the remaining messages")
+        public String delete(@RequestParam(value = "id") long id) {
         return applicationScopedBean.removeMessage(id);
     }
 
@@ -55,8 +56,9 @@ public class MessageController {
             method = RequestMethod.PUT,
             consumes = {"application/json"},
             produces = {"application/json"})
-
-    public Message put(@RequestBody long id, @RequestBody String message){
+    @ApiOperation(value = "Update a message.", notes = "You have to provide a valid message ID and the message in the payload body.")
+    public Message put(@ApiParam(value = "The ID of message,", required = true) @RequestBody long id,
+                       @ApiParam(name = "The changed message.", required = true)@RequestBody String message){
         // public Message put(@RequestBody long id, @RequestBody String message){
         // public Message put(@RequestParam(value = "id") long id, @RequestParam(value = "message") String message){
         Message msg = new Message(id, String.format(message));
@@ -64,10 +66,15 @@ public class MessageController {
         return msg;
     }
 
-    @RequestMapping("/messageservice/1.0/list")
+    @RequestMapping(value = "/messageservice/1.0/list",
+            method = RequestMethod.GET,
+            produces = "application/json")
+    @ApiOperation("List all available messages.")
     public String list(){ //todo: where should the exception be caught in app? or where?
         return applicationScopedBean.listMessages();
     }
+
+
     /* TODO: add exception handling - what error msg does the client get? is it useful? */
 /**
     @ExceptionHandler({Exception.class})
