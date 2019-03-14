@@ -58,7 +58,7 @@ public class MessageController {
             produces = {"application/json"})
     @ApiOperation(value = "Update a message.", notes = "You have to provide a valid message ID and the message in the payload body.")
     public Message put(@ApiParam(value = "The ID of message,", required = true) @RequestBody long id,
-                       @ApiParam(name = "The changed message.", required = true)@RequestBody String message){
+                       @ApiParam(name = "The changed message.", required = true) @RequestBody String message){
         // public Message put(@RequestBody long id, @RequestBody String message){
         // public Message put(@RequestParam(value = "id") long id, @RequestParam(value = "message") String message){
         Message msg = new Message(id, String.format(message));
