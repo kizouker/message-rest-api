@@ -1,4 +1,4 @@
-package com.storytel;
+package com.storytel.config;
 
 
 

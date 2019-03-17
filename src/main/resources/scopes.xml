@@ -1,2 +1,2 @@
 
-<bean id="applicationScopedBean" class="com.storytel.Messages" scope="application"/>
+<bean id="applicationScopedBean" class="com.storytel.model.Messages" scope="application"/>

@@ -1,10 +1,15 @@
-package com.storytel;
+package com.storytel.rest;
 
 import java.util.concurrent.atomic.AtomicLong;
 
+import com.storytel.exception.ResourceNotFoundException;
+import com.storytel.model.Message;
+import com.storytel.model.Messages;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.*;
 import javax.annotation.Resource;
 
@@ -25,7 +30,8 @@ public class MessageController {
             consumes = {"text/plain"},
             produces = {"application/json"})
     @ApiOperation(value = "Create a message resource.", notes = "Returns a Json with the message and a generated ID")
-    public Message post(@ApiParam(name = "The message provided in the payload/requestbody", required = true) @RequestBody String message) {
+    @ResponseStatus(HttpStatus.CREATED)
+    public Message post(@ApiParam(name = "The message provided in the payload/requestbody", required = true) @RequestBody String message)  {
         long id = counter.incrementAndGet();
         Message msg = new Message(id, String.format(message));
         applicationScopedBean.setMessage(id, msg);
@@ -37,9 +43,10 @@ public class MessageController {
             consumes = {"application/x-www-form-urlencoded"},
             produces = {"application/json"})
     @ApiOperation(value = "Get a single message. You have to provide a valid message ID")
+    @ResponseStatus(HttpStatus.OK)
     public Message get(@ApiParam(name = "The ID of the Message.", required = true)
-                           @RequestParam(value = "id") long id) {
-        return applicationScopedBean.getText(id); //todo: return a differnt json object
+                           @RequestParam(value = "id") long id) throws ResourceNotFoundException, MissingServletRequestParameterException {
+        return applicationScopedBean.getMessage(id); //todo: return a differnt json object
     }
 
     @RequestMapping(value = "/messageservice/1.0/delete",
@@ -48,6 +55,7 @@ public class MessageController {
                 produces = {"application/json"})
     @ApiOperation(value = "Delete a message.", notes = "You have to provide a valid message ID in the url (ex: ?id=\"1\"). " +
             "Returned is a Json with the remaining messages")
+    @ResponseStatus(HttpStatus.OK)
         public String delete(@RequestParam(value = "id") long id) {
         return applicationScopedBean.removeMessage(id);
     }
@@ -57,6 +65,7 @@ public class MessageController {
             consumes = {"application/json"},
             produces = {"application/json"})
     @ApiOperation(value = "Update a message.", notes = "You have to provide a valid message ID and the message in the payload body.")
+    @ResponseStatus(HttpStatus.OK)
     public Message put(@ApiParam(value = "The ID of message,", required = true) @RequestBody long id,
                        @ApiParam(name = "The changed message.", required = true) @RequestBody String message){
         // public Message put(@RequestBody long id, @RequestBody String message){
@@ -70,12 +79,13 @@ public class MessageController {
             method = RequestMethod.GET,
             produces = "application/json")
     @ApiOperation("List all available messages.")
-    public String list(){ //todo: where should the exception be caught in app? or where?
+    @ResponseStatus(HttpStatus.OK)
+    public String list(){
         return applicationScopedBean.listMessages();
     }
 
 
-    /* TODO: add exception handling - what error msg does the client get? is it useful? */
+
 /**
     @ExceptionHandler({Exception.class})
     public  handleException(){
