@@ -3,21 +3,39 @@ package com.storytel.error;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import org.springframework.http.HttpStatus;
 
+
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 public class ApiError {
 
     private HttpStatus status;
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd hh:mm:ss")
     private LocalDateTime timestamp;
     private String message;
     private String debugMessage;
     private List<ApiValidationError> subErrors;
 
+    DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+
+    public String getTimestamp() {
+        return dtf.format(timestamp);
+    }
+
+    public String getMessage() {
+        return message;
+    }
+
+    public String getDebugMessage() {
+        return debugMessage;
+    }
+
+    public List<ApiValidationError> getSubErrors() {
+        return subErrors;
+    }
 
     private ApiError() {
-        timestamp = LocalDateTime.now();
+        this.timestamp = LocalDateTime.now();
     }
 
     public HttpStatus getStatus() {
@@ -41,5 +59,6 @@ public class ApiError {
         this.status = status;
         this.message = message;
         this.debugMessage = ex.getLocalizedMessage();
+
     }
 }

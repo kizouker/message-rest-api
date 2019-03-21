@@ -16,9 +16,11 @@ public class Messages {
 
     private HashMap<Long, Message> messages = new HashMap(); // Choosing hashmap - cheap and easy to find the messages
 
-    public void setMessage(Long id, Message message) {
+    public Message setMessage(Long id, Message message) {
 
         this.messages.put(id, message);
+
+        return this.messages.get(id);
     }
 
     public Message getMessage(Long id) throws ResourceNotFoundException, MissingServletRequestParameterException {
@@ -65,7 +67,7 @@ public class Messages {
         JsonGeneratorFactory factory = Json.createGeneratorFactory(properties);
         JsonGenerator generatedJson = factory.createGenerator(stringWriter);
             generatedJson
-                    .writeStartObject().write("client", "chrome...")
+                    .writeStartObject().write("client", "chrome..")
                     .writeStartArray("messages");
 
         Iterator iter = coll.iterator();
