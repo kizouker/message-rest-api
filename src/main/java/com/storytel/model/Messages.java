@@ -2,7 +2,6 @@ package com.storytel.model;
 
 import com.google.gson.Gson;
 import com.storytel.exception.ResourceNotFoundException;
-import org.springframework.web.bind.MissingServletRequestParameterException;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -19,10 +18,10 @@ public class Messages {
     public Message getMessage(Long id) throws ResourceNotFoundException {
 
         Message msg = this.messages.get(id);
-        String cause = "Message with ID=" + id + " does not exist";
+        String text = "Message with ID=" + id + " does not exist";
 
         if (msg == null) {
-            throw new ResourceNotFoundException(cause);
+            throw new ResourceNotFoundException(text);
         } else {
             return msg;
         }
@@ -30,10 +29,10 @@ public class Messages {
 
     public String removeMessage(Long id) throws ResourceNotFoundException {
         Message msg = this.messages.get(id);
-        String cause = "Message with ID=" + id + " does not exist, so it cannot be removed.";
+        String text = "Message with ID=" + id + " does not exist, so it cannot be removed.";
 
         if (msg == null) {
-            throw new ResourceNotFoundException(cause);
+            throw new ResourceNotFoundException(text);
         } else {
             this.messages.remove(id);
             return listMessages();
@@ -45,5 +44,4 @@ public class Messages {
         Gson gson = new Gson();
         return gson.toJson(coll);
     }
-
 }

@@ -1,12 +1,9 @@
 package com.storytel.error;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
+
 import org.springframework.http.HttpStatus;
-
-
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.List;
 
 public class ApiError {
 
@@ -55,6 +52,5 @@ public class ApiError {
         this.status = status;
         this.message = message;
         this.debugMessage = ex.getLocalizedMessage();
-
     }
 }

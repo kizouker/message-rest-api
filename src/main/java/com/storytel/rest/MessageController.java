@@ -50,7 +50,7 @@ public class MessageController {
             method = RequestMethod.GET,
             consumes = {"application/x-www-form-urlencoded"},
             produces = {"application/json"})
-    @ApiOperation(value = "Get a single message. You have to provide a valid message ID")
+    @ApiOperation(value = "Get a single message.", notes = " You have to provide a valid message ID")
     public ResponseEntity<Message> get(@ApiParam(name = "The ID of the Message.", required = true)
                                            @PathVariable Long id)
             throws ResourceNotFoundException {
@@ -107,8 +107,6 @@ public class MessageController {
         return headers;
     }
 }
-
-
 
 /**
  *
