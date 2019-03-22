@@ -18,7 +18,7 @@ Get back to us when you've finished and we'll arrange the next steps; and if you
 
 # Build instructions
 
-N.B.! You need Java 11 to run this.
+N.B.! You need Java 11, git, maven to use this.
 
 1. Clone the github repository
 > git clone https://github.com/kizouker/storytel-rest-api.git
