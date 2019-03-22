@@ -14,7 +14,6 @@ public class ApiError {
     private LocalDateTime timestamp;
     private String message;
     private String debugMessage;
-    private List<ApiValidationError> subErrors;
 
     DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
@@ -30,9 +29,6 @@ public class ApiError {
         return debugMessage;
     }
 
-    public List<ApiValidationError> getSubErrors() {
-        return subErrors;
-    }
 
     private ApiError() {
         this.timestamp = LocalDateTime.now();

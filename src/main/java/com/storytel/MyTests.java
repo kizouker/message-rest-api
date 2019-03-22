@@ -1,8 +1,10 @@
+package com.storytel;
+
+
 import org.json.simple.parser.ParseException;
 import org.junit.Test;
 
 import java.io.IOException;
-import java.io.StringWriter;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.http.HttpClient;
@@ -22,7 +24,6 @@ import org.springframework.http.HttpStatus;
 public class MyTests {
 
     private final String url_ = "http://localhost:8080/restservice/1.0/messages";
-
     private HttpClient httpclient = HttpClient.newBuilder().build();
 
 
@@ -95,9 +96,20 @@ public class MyTests {
         assertThat(responsePut.statusCode(), equalTo(HttpStatus.OK.value()));
     }
 
+    @Test
+    public void testPositiveFlowList() throws URISyntaxException, IOException, InterruptedException, ParseException {
+        //do a http get
+        String http_verb ="list";
+
+        HttpResponse<String> responsePut = doHttpGetList( url_, http_verb);
+
+        assertThat(responsePut.statusCode(), equalTo(HttpStatus.OK.value()));
+    }
+
+
 
     private HttpResponse doPostWithText(String text, String url, String http_verb) throws URISyntaxException, IOException, InterruptedException{
-
+        System.out.println("----- "+ " ------"  + " -----");
         System.out.println("-----  " + " HTTP VERB : " + http_verb + " -----");
         System.out.println("-----  "+ url + " -----");
 
@@ -111,19 +123,18 @@ public class MyTests {
                 .build()
                 .send(request, HttpResponse.BodyHandlers.ofString());
 
-        System.out.println("HTTP StatusCode: " + response.statusCode());
-        System.out.println("HTTP Response Body: " + response.body());
+        System.out.println("-----  " + " HTTP StatusCode: " + response.statusCode());
+        System.out.println("-----  " + " HTTP Response Body: " + response.body());
         System.out.println("----- "+ " ------"  + " -----");
 
         return response;
     }
 
-
-
     private HttpResponse<String> doHttpGet(HttpResponse response, String url, String http_verb, long id) throws URISyntaxException, IOException, InterruptedException {
 
         String url__ = url + "/" + id;
-        System.out.println("-----  " + "HTTP VERB :" + http_verb + " -----");
+        System.out.println("----- "+ " ------"  + " -----");
+        System.out.println("-----  " + "HTTP VERB : " + http_verb + " -----");
         System.out.println("-----  "+ url__ + " -----");
 
         HttpRequest requestGet = HttpRequest.newBuilder()
@@ -135,14 +146,37 @@ public class MyTests {
         HttpResponse<String> responseGet = httpclient
                 .send(requestGet, BodyHandlers.ofString());
 
+        System.out.println("-----  " + " HTTP StatusCode: " + response.statusCode());
+        System.out.println("-----  " + " HTTP Response Body: " + response.body());
+        System.out.println("----- "+ " ------"  + " -----");
+        return responseGet;
+    }
+
+    private HttpResponse<String> doHttpGetList(String url, String http_verb) throws URISyntaxException, IOException, InterruptedException {
+        System.out.println("----- "+ " ------"  + " -----");
+        System.out.println("----- "+ " ------"  + " -----");
+        System.out.println("-----  " + "HTTP VERB: " + http_verb + " -----");
+        System.out.println("-----  "+ url + " -----");
+
+        HttpRequest requestGet = HttpRequest.newBuilder()
+                .uri(new URI(url))
+                .GET()
+                .build();
+
+        HttpResponse<String> responseGet = httpclient
+                .send(requestGet, BodyHandlers.ofString());
+
         System.out.println("HTTP StatusCode: " + responseGet.statusCode());
         System.out.println("HTTP Response Body: " + responseGet.body());
+        System.out.println("----- "+ " ------"  + " -----");
+        System.out.println("----- "+ " ------"  + " -----");
         return responseGet;
     }
 
     private HttpResponse<String> doHttpDelete(HttpResponse response, String url, String http_verb, long id) throws URISyntaxException, IOException, InterruptedException {
         String url__ = url + "/" +id;
-        System.out.println("-----  " + "HTTP VERB :" + http_verb + " -----");
+        System.out.println("----- "+ " ------"  + " -----");
+        System.out.println("-----  " + "HTTP VERB : " + http_verb + " -----");
         System.out.println("-----  "+ url__ + " -----");
 
         HttpRequest requestDel = HttpRequest.newBuilder()
@@ -154,14 +188,16 @@ public class MyTests {
         HttpResponse<String> responseDelete = httpclient
                 .send(requestDel, BodyHandlers.ofString());
 
-        System.out.println("HTTP StatusCode: " + responseDelete.statusCode());
-        System.out.println("HTTP Response Body: " + responseDelete.body());
+        System.out.println("-----  " + " HTTP StatusCode: " + response.statusCode());
+        System.out.println("-----  " + " HTTP Response Body: " + response.body());
+        System.out.println("----- "+ " ------"  + " -----");
         return responseDelete;
     }
 
     private HttpResponse<String> doHttpPut(String changedText, String url, String http_verb, long id) throws URISyntaxException, IOException, InterruptedException {
         String url__ = url + "/" + id;
-        System.out.println("-----  " + "HTTP VERB :" + http_verb + " -----");
+        System.out.println("----- "+ " ------"  + " -----");
+        System.out.println("-----  " + "HTTP VERB : " + http_verb + " -----");
         System.out.println("-----  "+ url__ + " -----");
 
         HttpRequest requestPut = HttpRequest.newBuilder()
@@ -173,8 +209,9 @@ public class MyTests {
         HttpResponse<String> responsePut = httpclient
                 .send(requestPut, HttpResponse.BodyHandlers.ofString());
 
-        System.out.println("HTTP StatusCode: " + responsePut.statusCode());
-        System.out.println("HTTP Response Body: " + responsePut.body());
+        System.out.println("-----  " + " HTTP StatusCode: " + responsePut.statusCode());
+        System.out.println("-----  " + " HTTP Response Body: " + responsePut.body());
+        System.out.println("----- "+ " ------"  + " -----");
         return responsePut;
     }
 

@@ -12,7 +12,6 @@ import io.swagger.annotations.ApiParam;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import org.springframework.web.util.UriComponentsBuilder;
@@ -37,19 +36,12 @@ public class MessageController {
             produces = {"application/json"})
     @ApiOperation(value = "Create a message resource.", notes = "Returns a Json with the message and a generated ID")
      public ResponseEntity<Message> post(@ApiParam(name = "The message provided in the payload/requestbody", required = true)
-                            @RequestBody String message, UriComponentsBuilder ucb)  {
+                            @RequestBody String message, UriComponentsBuilder ucb)  throws ResourceNotFoundException{
         long id = counter.incrementAndGet();
         Message msg = new Message(id, String.format(message));
         applicationScopedBean.setMessage(id, msg);
 
-        HttpHeaders headers = new HttpHeaders();
-        URI locationUri = ServletUriComponentsBuilder
-                .fromCurrentContextPath()
-                .path("/{id}")
-                .buildAndExpand(msg.getId())
-                .toUri();
-
-        headers.setLocation(locationUri);
+        HttpHeaders headers = getHttpHeaders(msg);
 
         return new ResponseEntity<>(msg, headers, HttpStatus.CREATED);
     }
@@ -61,7 +53,7 @@ public class MessageController {
     @ApiOperation(value = "Get a single message. You have to provide a valid message ID")
     public ResponseEntity<Message> get(@ApiParam(name = "The ID of the Message.", required = true)
                                            @PathVariable Long id)
-            throws ResourceNotFoundException, MissingServletRequestParameterException {
+            throws ResourceNotFoundException {
 
         return new  ResponseEntity<>(applicationScopedBean.getMessage(id), HttpStatus.OK);
     }
@@ -89,7 +81,21 @@ public class MessageController {
             throws ResourceNotFoundException {
 
         Message msg = new Message(id, String.format(message));
+        HttpHeaders headers = getHttpHeaders(msg);
 
+        return new ResponseEntity<>(applicationScopedBean.setMessage(id, msg), headers, HttpStatus.OK);
+    }
+
+    @RequestMapping(value = "/1.0/messages",
+            method = RequestMethod.GET,
+            produces = "application/json")
+    @ApiOperation("List all available messages.")
+    public ResponseEntity<String> list() throws ResourceNotFoundException{
+
+        return new ResponseEntity<>(applicationScopedBean.listMessages(), HttpStatus.OK);
+    }
+
+    private HttpHeaders getHttpHeaders(Message msg) {
         HttpHeaders headers = new HttpHeaders();
         URI locationUri = ServletUriComponentsBuilder
                 .fromCurrentContextPath()
@@ -98,18 +104,7 @@ public class MessageController {
                 .toUri();
 
         headers.setLocation(locationUri);
-
-       return new ResponseEntity<>(applicationScopedBean.setMessage(id, msg), headers, HttpStatus.OK);
-    }
-
-    @RequestMapping(value = "/1.0/messages",
-            method = RequestMethod.GET,
-            produces = "application/json")
-    @ApiOperation("List all available messages.")
-    public ResponseEntity<String> list(){
-
-        return new ResponseEntity<>(applicationScopedBean.listMessages(), HttpStatus.OK);
-
+        return headers;
     }
 }
 
