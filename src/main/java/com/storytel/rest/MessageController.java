@@ -38,7 +38,7 @@ public class MessageController {
      public ResponseEntity<Message> post(@ApiParam(name = "The message provided in the payload/requestbody", required = true)
                             @RequestBody String message, UriComponentsBuilder ucb)  throws ResourceNotFoundException{
         long id = counter.incrementAndGet();
-        Message msg = new Message(id, String.format(message));
+        Message msg = new Message(id, message);
         applicationScopedBean.setMessage(id, msg);
 
         HttpHeaders headers = getHttpHeaders(msg);
@@ -80,7 +80,7 @@ public class MessageController {
                        @ApiParam(name = "The changed message.", required = true) @RequestBody String message)
             throws ResourceNotFoundException {
 
-        Message msg = new Message(id, String.format(message));
+        Message msg = new Message(id, message);
         HttpHeaders headers = getHttpHeaders(msg);
 
         return new ResponseEntity<>(applicationScopedBean.setMessage(id, msg), headers, HttpStatus.OK);
