@@ -1,4 +1,4 @@
-package com.storytel.exception;
+package se.devopscoach.exception;
 
 /**
  * For HTTP 404 errros

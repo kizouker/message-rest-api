@@ -1,11 +1,11 @@
-package com.storytel.rest;
+package se.devopscoach.rest;
 
 import java.net.URI;
 import java.util.concurrent.atomic.AtomicLong;
 
-import com.storytel.exception.ResourceNotFoundException;
-import com.storytel.model.Message;
-import com.storytel.model.Messages;
+import se.devopscoach.exception.ResourceNotFoundException;
+import se.devopscoach.model.Message;
+import se.devopscoach.model.Messages;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
@@ -36,7 +36,7 @@ public class MessageController {
             produces = {"application/json"})
     @ApiOperation(value = "Create a message resource.", notes = "Returns a Json with the message and a generated ID")
      public ResponseEntity<Message> post(@ApiParam(name = "The message provided in the payload/requestbody", required = true)
-                            @RequestBody String message, UriComponentsBuilder ucb)  throws ResourceNotFoundException{
+                            @RequestBody String message, UriComponentsBuilder ucb)  throws ResourceNotFoundException {
         long id = counter.incrementAndGet();
         Message msg = new Message(id, message);
         applicationScopedBean.setMessage(id, msg);

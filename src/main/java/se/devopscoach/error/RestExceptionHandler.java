@@ -1,6 +1,6 @@
-package com.storytel.error;
+package se.devopscoach.error;
 
-import com.storytel.exception.ResourceNotFoundException;
+import se.devopscoach.exception.ResourceNotFoundException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

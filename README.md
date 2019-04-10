@@ -1,4 +1,4 @@
-# storytel-rest-api
+# example-rest-api
 
 Design and build a RESTful API to work as a basic message store.
 
@@ -21,7 +21,7 @@ Get back to us when you've finished and we'll arrange the next steps; and if you
 N.B.! You need Java 11, git, maven to use this.
 
 1. Clone the github repository
-> git clone https://github.com/kizouker/storytel-rest-api.git
+> git clone https://github.com/kizouker/devopscoach-rest-api.git
 2. Build the project using maven
 > mvn package
 (A jar war will be placed in

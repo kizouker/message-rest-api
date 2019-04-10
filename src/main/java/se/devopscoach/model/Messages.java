@@ -1,7 +1,7 @@
-package com.storytel.model;
+package se.devopscoach.model;
 
 import com.google.gson.Gson;
-import com.storytel.exception.ResourceNotFoundException;
+import se.devopscoach.exception.ResourceNotFoundException;
 
 import java.util.Collection;
 import java.util.HashMap;

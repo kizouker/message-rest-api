@@ -1,4 +1,4 @@
-package com.storytel.error;
+package se.devopscoach.error;
 
 
 import org.springframework.http.HttpStatus;

@@ -1,4 +1,4 @@
-package com.storytel.config;
+package se.devopscoach.config;
 
 
 

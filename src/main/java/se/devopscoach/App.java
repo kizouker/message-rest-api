@@ -1,6 +1,6 @@
-package com.storytel;
+package se.devopscoach;
 
-import com.storytel.model.Messages;
+import se.devopscoach.model.Messages;
 import org.junit.internal.TextListener;
 import org.junit.runner.JUnitCore;
 import org.springframework.boot.SpringApplication;

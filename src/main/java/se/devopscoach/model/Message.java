@@ -1,4 +1,4 @@
-package com.storytel.model;
+package se.devopscoach.model;
 
 public class Message {
 
